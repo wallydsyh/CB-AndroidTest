@@ -33,4 +33,11 @@ class ProductModel {
         return productExpirationDate.toString()
     }
 
+    fun setProductName(name: String){
+        productName = name
+    }
+
+    fun setProductExpiringDate(date: String) {
+        productExpirationDate = date
+    }
 }

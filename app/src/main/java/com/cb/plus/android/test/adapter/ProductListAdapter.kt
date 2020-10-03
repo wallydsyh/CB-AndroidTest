@@ -8,7 +8,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.cb.plus.android.test.R
 import com.cb.plus.android.test.databinding.RecyclerviewItemBinding
-import com.cb.plus.android.test.model.data.ProductData
+import com.cb.plus.android.test.data.OnEditProductInterface
+import com.cb.plus.android.test.data.ProductData
+import com.cb.plus.android.test.utils.DisplayDialog
 import com.cb.plus.android.test.utils.ImageUtils
 
 class ProductListAdapter internal constructor(
@@ -18,6 +20,8 @@ class ProductListAdapter internal constructor(
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private var productData = emptyList<ProductData>()
     private lateinit var binding: RecyclerviewItemBinding
+
+     lateinit var editProductInterface: OnEditProductInterface
 
     inner class WordViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val productNameTexView = binding.textViewProductName
@@ -32,14 +36,18 @@ class ProductListAdapter internal constructor(
     }
 
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
-        val current = productData[position]
-        holder.productNameTexView.text = current.product?.getProductName()
-        holder.productExpiringDateTexView.text = current.product?.getExpirationDate()
+        val productData = productData[position]
+        holder.productNameTexView.text = productData.product?.getProductName()
+        holder.productExpiringDateTexView.text = productData.product?.getExpirationDate()
         ImageUtils().displayRoundImageFromUrl(
             holder.itemView.context,
-            current.product?.getProductImage(),
+            productData.product?.getProductImage(),
             holder.productImageView
         )
+        holder.itemView.setOnClickListener {
+            DisplayDialog.displayDialog(holder.itemView.context, productData, editProductInterface )
+
+        }
     }
 
     internal fun setProducts(productData: List<ProductData>) {
@@ -48,4 +56,7 @@ class ProductListAdapter internal constructor(
     }
 
     override fun getItemCount() = productData.size
+
+
+
 }

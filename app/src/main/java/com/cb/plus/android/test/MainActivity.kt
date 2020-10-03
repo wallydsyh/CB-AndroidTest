@@ -2,7 +2,6 @@ package com.cb.plus.android.test
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,20 +13,18 @@ import com.cb.plus.android.test.adapter.ProductListAdapter
 import com.cb.plus.android.test.api.ApiHelper
 import com.cb.plus.android.test.api.ApiServiceImpl
 import com.cb.plus.android.test.databinding.ActivityMainBinding
-import com.cb.plus.android.test.model.ProductModel
-import com.cb.plus.android.test.model.ProductResponse
-import com.cb.plus.android.test.model.data.AppDatabase
-import com.cb.plus.android.test.model.data.ProductData
-import com.cb.plus.android.test.model.data.viewModel.ProductDataBaseViewModel
+import com.cb.plus.android.test.data.OnEditProductInterface
+import com.cb.plus.android.test.data.ProductData
+import com.cb.plus.android.test.data.viewModel.ProductDataBaseViewModel
+import com.cb.plus.android.test.data.viewModel.ViewModelFactoryDataBase
 import com.cb.plus.android.test.viewModel.ProductViewModel
 import com.cb.plus.android.test.viewModel.ViewModelFactory
-import com.cb.plus.android.test.viewModel.ViewModelFactory1
 import com.google.zxing.integration.android.IntentIntegrator
 
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class MainActivity : AppCompatActivity(), View.OnClickListener,
+    OnEditProductInterface {
     private lateinit var binding: ActivityMainBinding
-    private var TAG = MainActivity::class.java.simpleName
     private lateinit var productViewModel: ProductViewModel
     private lateinit var productDataBaseViewModel: ProductDataBaseViewModel
     private lateinit var adapter: ProductListAdapter
@@ -43,6 +40,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private fun setListener() {
         val recyclerView = binding.productRecycleView
         adapter = ProductListAdapter(this)
+        adapter.editProductInterface = this
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
         binding.buttonScanProduct.setOnClickListener(this)
@@ -50,7 +48,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun removeListener() {
         binding.buttonScanProduct.setOnClickListener(null)
-
     }
 
     private fun setupViewModel() {
@@ -60,7 +57,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         ).get(
             ProductViewModel::class.java
         )
-        productDataBaseViewModel = ViewModelProvider(this, ViewModelFactory1(this.application)).get(
+        productDataBaseViewModel = ViewModelProvider(
+            this,
+            ViewModelFactoryDataBase(this.application)
+        ).get(
             ProductDataBaseViewModel::class.java
         )
     }
@@ -72,7 +72,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         } else {
             productViewModel.product.observe(this, Observer {
-                Log.d(TAG, "Product ${it.getProduct()?.getProductName()}")
+                val productData = ProductData(barcode, it.getProduct())
+               productDataBaseViewModel.insert(productData)
             })
         }
     }
@@ -95,7 +96,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 integrator.initiateScan()
             }
         }
-
     }
 
     override fun onActivityResult(
@@ -110,7 +110,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show()
             } else {
                 setupObserver(result.contents)
-                Toast.makeText(this, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)
@@ -120,5 +119,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onDestroy() {
         super.onDestroy()
         removeListener()
+    }
+
+    override fun onEditProduct(productData: ProductData) {
+        productDataBaseViewModel.update(productData)
     }
 }

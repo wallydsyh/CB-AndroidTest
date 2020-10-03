@@ -1,13 +1,12 @@
-package com.cb.plus.android.test.model.data.viewModel
+package com.cb.plus.android.test.data.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import com.cb.plus.android.test.model.ProductModel
-import com.cb.plus.android.test.model.data.AppDatabase
-import com.cb.plus.android.test.model.data.ProductData
-import com.cb.plus.android.test.model.data.repository.ProductDataBaseRepository
+import com.cb.plus.android.test.data.AppDatabase
+import com.cb.plus.android.test.data.ProductData
+import com.cb.plus.android.test.data.repository.ProductDataBaseRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -26,5 +25,17 @@ class ProductDataBaseViewModel(application: Application) : AndroidViewModel(appl
      */
     fun insert(productData: ProductData) = viewModelScope.launch(Dispatchers.IO) {
         repository.insert(productData)
+    }
+
+    fun update(productData: ProductData) = viewModelScope.launch(Dispatchers.IO) {
+        repository.update(productData)
+    }
+
+    fun isProductExist(productData: ProductData) =  viewModelScope.launch(Dispatchers.IO) {
+         if (!repository.isProductExist(productData)){
+             insert(productData)
+         }else {
+
+         }
     }
 }

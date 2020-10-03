@@ -4,9 +4,6 @@ import androidx.room.TypeConverter
 import com.cb.plus.android.test.model.ProductModel
 import com.google.gson.Gson
 
-import com.google.gson.reflect.TypeToken
-import java.lang.reflect.Type
-
 
 class TypeConverter {
     @TypeConverter
