@@ -9,34 +9,42 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.cb.plus.android.test.api.ApiClient
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.cb.plus.android.test.adapter.ProductListAdapter
 import com.cb.plus.android.test.api.ApiHelper
-import com.cb.plus.android.test.api.ApiService
 import com.cb.plus.android.test.api.ApiServiceImpl
 import com.cb.plus.android.test.databinding.ActivityMainBinding
 import com.cb.plus.android.test.model.ProductModel
 import com.cb.plus.android.test.model.ProductResponse
+import com.cb.plus.android.test.model.data.AppDatabase
+import com.cb.plus.android.test.model.data.ProductData
+import com.cb.plus.android.test.model.data.viewModel.ProductDataBaseViewModel
 import com.cb.plus.android.test.viewModel.ProductViewModel
 import com.cb.plus.android.test.viewModel.ViewModelFactory
+import com.cb.plus.android.test.viewModel.ViewModelFactory1
 import com.google.zxing.integration.android.IntentIntegrator
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityMainBinding
     private var TAG = MainActivity::class.java.simpleName
     private lateinit var productViewModel: ProductViewModel
+    private lateinit var productDataBaseViewModel: ProductDataBaseViewModel
+    private lateinit var adapter: ProductListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setListener()
         setupViewModel()
+        setupObserverProductDataBase()
     }
 
     private fun setListener() {
+        val recyclerView = binding.productRecycleView
+        adapter = ProductListAdapter(this)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
         binding.buttonScanProduct.setOnClickListener(this)
     }
 
@@ -52,45 +60,39 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         ).get(
             ProductViewModel::class.java
         )
+        productDataBaseViewModel = ViewModelProvider(this, ViewModelFactory1(this.application)).get(
+            ProductDataBaseViewModel::class.java
+        )
     }
 
-    fun setupObserver(barcode: String){
+    private fun setupObserver(barcode: String) {
         productViewModel.getProduct(barcode)
-        productViewModel.product.observe(this, Observer {
-            Log.d(TAG, "Product ${it.getProduct()?.getProductName()}")
-        })
+        if (productViewModel.product.hasObservers()) {
+            productViewModel.product.removeObserver(Observer { })
 
-    }
-/*
-    private fun scanProduct(barcode: String) {
-        val apiService: ApiService? = ApiClient().getClient()?.create(ApiService::class.java)
-        val call: Call<ProductResponse>? = apiService?.getProduct(barcode)
-        call!!.enqueue(object : Callback<ProductResponse?> {
-            override fun onResponse(
-                call: Call<ProductResponse?>?,
-                response: Response<ProductResponse?>
-            ) {
-                val productModel: ProductModel? = response.body()?.getProduct()
-                Log.d(TAG, "Product $productModel")
-            }
-
-            override fun onFailure(
-                call: Call<ProductResponse?>?,
-                t: Throwable
-            ) {
-                // Log error here since request failed
-                Log.e(TAG, t.localizedMessage)
-            }
-        })
-
+        } else {
+            productViewModel.product.observe(this, Observer {
+                Log.d(TAG, "Product ${it.getProduct()?.getProductName()}")
+            })
+        }
     }
 
- */
+    private fun setupObserverProductDataBase() {
+        if (productDataBaseViewModel.allProducts.hasObservers()) {
+            productDataBaseViewModel.allProducts.removeObserver(Observer {})
+        } else {
+            productDataBaseViewModel.allProducts.observe(this, Observer {
+                adapter.setProducts(it)
+            })
+        }
+    }
 
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.button_scan_product -> {
-                IntentIntegrator(this).initiateScan()
+                val integrator = IntentIntegrator(this)
+                integrator.setOrientationLocked(false);
+                integrator.initiateScan()
             }
         }
 

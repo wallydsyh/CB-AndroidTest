@@ -18,7 +18,6 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe({
                 product.postValue(it)
-
             }, {
                 Log.d("Error", it.localizedMessage)
             })

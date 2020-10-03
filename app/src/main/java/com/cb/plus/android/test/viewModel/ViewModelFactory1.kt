@@ -7,22 +7,12 @@ import com.cb.plus.android.test.api.ApiHelper
 import com.cb.plus.android.test.model.data.viewModel.ProductDataBaseViewModel
 import com.cb.plus.android.test.repository.ProductRepository
 
-class ViewModelFactory(private val apiHelper: ApiHelper) : ViewModelProvider.Factory {
+class ViewModelFactory1(private val application: Application) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         when {
-            modelClass.isAssignableFrom(ProductViewModel::class.java) -> {
-                return ProductViewModel(
-                    ProductRepository(
-                        apiHelper
-                    )
-                ) as T
-
-
-            }
-
             modelClass.isAssignableFrom(ProductDataBaseViewModel::class.java) -> {
-                return ProductDataBaseViewModel(Application()) as T
+                return ProductDataBaseViewModel(application) as T
 
 
             }
