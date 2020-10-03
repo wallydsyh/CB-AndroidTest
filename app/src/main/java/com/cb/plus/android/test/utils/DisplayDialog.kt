@@ -24,10 +24,13 @@ object DisplayDialog {
         binding.textViewProductExpirationDate.setText(productData.product?.getExpirationDate())
         alert.setView(view)
         alert.setCancelable(false)
-        alert.setPositiveButton("Ok", DialogInterface.OnClickListener { dialogInterface, i ->
+        alert.setPositiveButton("Ok", DialogInterface.OnClickListener { _, _ ->
             productData.product?.setProductName( binding.textViewProductName.text.toString())
             productData.product?.setProductExpiringDate( binding.textViewProductExpirationDate.text.toString())
             editProductInterface.onEditProduct(productData)
+        })
+        alert.setNegativeButton("Cancel", DialogInterface.OnClickListener { dialogInterface, _ ->
+            dialogInterface.dismiss()
         })
         alert.show()
     }

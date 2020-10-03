@@ -3,6 +3,7 @@ package com.cb.plus.android.test.data.viewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.cb.plus.android.test.data.AppDatabase
 import com.cb.plus.android.test.data.ProductData
@@ -31,11 +32,11 @@ class ProductDataBaseViewModel(application: Application) : AndroidViewModel(appl
         repository.update(productData)
     }
 
-    fun isProductExist(productData: ProductData) =  viewModelScope.launch(Dispatchers.IO) {
-         if (!repository.isProductExist(productData)){
-             insert(productData)
-         }else {
+    fun isProductExist(productData: ProductData) = viewModelScope.launch(Dispatchers.IO) {
+         repository.isProductExist(productData)
+    }
 
-         }
+    fun getProduct(productData: ProductData) = viewModelScope.launch(Dispatchers.IO) {
+        repository.getProduct(productData)
     }
 }

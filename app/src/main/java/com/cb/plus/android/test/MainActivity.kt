@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.cb.plus.android.test.adapter.ProductListAdapter
 import com.cb.plus.android.test.api.ApiHelper
 import com.cb.plus.android.test.api.ApiServiceImpl
-import com.cb.plus.android.test.databinding.ActivityMainBinding
 import com.cb.plus.android.test.data.OnEditProductInterface
 import com.cb.plus.android.test.data.ProductData
 import com.cb.plus.android.test.data.viewModel.ProductDataBaseViewModel
 import com.cb.plus.android.test.data.viewModel.ViewModelFactoryDataBase
+import com.cb.plus.android.test.databinding.ActivityMainBinding
 import com.cb.plus.android.test.viewModel.ProductViewModel
 import com.cb.plus.android.test.viewModel.ViewModelFactory
 import com.google.zxing.integration.android.IntentIntegrator
@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var productViewModel: ProductViewModel
     private lateinit var productDataBaseViewModel: ProductDataBaseViewModel
     private lateinit var adapter: ProductListAdapter
+    private var barcode = String()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,25 +68,42 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun setupObserver(barcode: String) {
         productViewModel.getProduct(barcode)
-        if (productViewModel.product.hasObservers()) {
-            productViewModel.product.removeObserver(Observer { })
-
+    }
+/*
+    private fun checkIfProductExist(productData: ProductData) {
+        productDataBaseViewModel.isProductExist(productData)
+        if (productDataBaseViewModel.isProductExist.hasObservers()) {
+            productDataBaseViewModel.isProductExist.removeObserver { }
         } else {
-            productViewModel.product.observe(this, Observer {
-                val productData = ProductData(barcode, it.getProduct())
-               productDataBaseViewModel.insert(productData)
+            productDataBaseViewModel.isProductExist.observe(this, Observer {
+                when (it) {
+                    true -> {
+                        getProductInDatabase(productData)
+                        Toast.makeText(this, "already exist", Toast.LENGTH_LONG).show()
+                    }
+                    else -> {
+                        productDataBaseViewModel.insert(productData)
+                    }
+                }
             })
         }
     }
 
+    private fun getProductInDatabase(productData: ProductData) {
+
+    }
+
+ */
+
     private fun setupObserverProductDataBase() {
-        if (productDataBaseViewModel.allProducts.hasObservers()) {
-            productDataBaseViewModel.allProducts.removeObserver(Observer {})
-        } else {
-            productDataBaseViewModel.allProducts.observe(this, Observer {
-                adapter.setProducts(it)
-            })
-        }
+
+        productDataBaseViewModel.allProducts.observe(this, Observer {
+            adapter.setProducts(it)
+        })
+        productViewModel.product.observe(this, Observer {
+            val productData = ProductData(barcode, it.getProduct())
+            productDataBaseViewModel.insert(productData)
+        })
     }
 
     override fun onClick(v: View?) {
@@ -110,6 +128,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show()
             } else {
                 setupObserver(result.contents)
+                barcode = result.contents
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)

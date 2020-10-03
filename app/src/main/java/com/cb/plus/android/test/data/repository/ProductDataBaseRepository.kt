@@ -23,4 +23,10 @@ class ProductDataBaseRepository(private val productDao: ProductDao) {
     suspend fun isProductExist(productData: ProductData): Boolean {
        return productDao.isProductExist(productData.id)
     }
+
+    @WorkerThread
+    @Suppress("RedundantSuspendModifier")
+    suspend fun getProduct(productData: ProductData): ProductData {
+       return productDao.getProduct(productData.id)
+    }
 }
