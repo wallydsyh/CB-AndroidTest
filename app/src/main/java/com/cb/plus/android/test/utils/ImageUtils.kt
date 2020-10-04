@@ -32,7 +32,8 @@ class ImageUtils {
             .load(url)
             .into(object : BitmapImageViewTarget(imageView) {
                 override fun setResource(resource: Bitmap?) {
-                    val circularBitmapDrawable = RoundedBitmapDrawableFactory.create(context.resources, resource)
+                    val circularBitmapDrawable =
+                        RoundedBitmapDrawableFactory.create(context.resources, resource)
                     circularBitmapDrawable.isCircular = true
                     imageView.setImageDrawable(circularBitmapDrawable)
                 }

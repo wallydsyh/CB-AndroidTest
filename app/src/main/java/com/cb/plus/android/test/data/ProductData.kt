@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import com.cb.plus.android.test.model.ProductModel
 
 
-@Entity (tableName = "product_table")
+@Entity(tableName = "product_table")
 data class ProductData(
     @PrimaryKey val id: String,
     @ColumnInfo(name = "product") val product: ProductModel?

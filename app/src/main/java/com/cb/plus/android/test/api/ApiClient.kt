@@ -6,9 +6,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 class ApiClient {
-    val BASE_URL = "https://world.openfoodfacts.org/api/v0/product/"
+    private val BASE_URL = "https://world.openfoodfacts.org/api/v0/product/"
     private var retrofit: Retrofit? = null
-
 
     fun getClient(): Retrofit? {
         if (retrofit == null) {

@@ -5,9 +5,9 @@ import android.content.DialogInterface
 import android.view.LayoutInflater
 import androidx.databinding.DataBindingUtil
 import com.cb.plus.android.test.R
-import com.cb.plus.android.test.databinding.UpdateProductDialogBinding
 import com.cb.plus.android.test.data.OnEditProductInterface
 import com.cb.plus.android.test.data.ProductData
+import com.cb.plus.android.test.databinding.UpdateProductDialogBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 object DisplayDialog {
@@ -25,8 +25,8 @@ object DisplayDialog {
         alert.setView(view)
         alert.setCancelable(false)
         alert.setPositiveButton("Ok", DialogInterface.OnClickListener { _, _ ->
-            productData.product?.setProductName( binding.textViewProductName.text.toString())
-            productData.product?.setProductExpiringDate( binding.textViewProductExpirationDate.text.toString())
+            productData.product?.setProductName(binding.textViewProductName.text.toString())
+            productData.product?.setProductExpiringDate(binding.textViewProductExpirationDate.text.toString())
             editProductInterface.onEditProduct(productData)
         })
         alert.setNegativeButton("Cancel", DialogInterface.OnClickListener { dialogInterface, _ ->

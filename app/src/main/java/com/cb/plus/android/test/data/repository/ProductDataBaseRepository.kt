@@ -7,6 +7,7 @@ import com.cb.plus.android.test.data.ProductData
 
 class ProductDataBaseRepository(private val productDao: ProductDao) {
     val allProducts: LiveData<List<ProductData>> = productDao.getAllProducts()
+
     @WorkerThread
     @Suppress("RedundantSuspendModifier")
     suspend fun insert(productData: ProductData) {
@@ -18,15 +19,16 @@ class ProductDataBaseRepository(private val productDao: ProductDao) {
     suspend fun update(productData: ProductData) {
         productDao.update(productData)
     }
+
     @WorkerThread
     @Suppress("RedundantSuspendModifier")
     suspend fun isProductExist(productData: ProductData): Boolean {
-       return productDao.isProductExist(productData.id)
+        return productDao.isProductExist(productData.id)
     }
 
     @WorkerThread
     @Suppress("RedundantSuspendModifier")
     suspend fun getProduct(productData: ProductData): ProductData {
-       return productDao.getProduct(productData.id)
+        return productDao.getProduct(productData.id)
     }
 }

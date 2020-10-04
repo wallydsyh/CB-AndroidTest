@@ -106,7 +106,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
     private suspend fun setupObserverProductDataBase() {
-
         productDataBaseViewModel.allProducts.observe(this, Observer {
             adapter.setProducts(it)
         })
@@ -116,11 +115,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 scope.launch {
                     checkForProduct(productData)
                 }
-
             } else {
                 Toast.makeText(this, "Product not found in database", Toast.LENGTH_LONG).show()
             }
-
         })
     }
 

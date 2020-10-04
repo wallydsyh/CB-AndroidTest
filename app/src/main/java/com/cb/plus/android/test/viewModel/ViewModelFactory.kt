@@ -18,13 +18,9 @@ class ViewModelFactory(private val apiHelper: ApiHelper) : ViewModelProvider.Fac
                     )
                 ) as T
 
-
             }
-
             modelClass.isAssignableFrom(ProductDataBaseViewModel::class.java) -> {
                 return ProductDataBaseViewModel(Application()) as T
-
-
             }
             else -> throw IllegalArgumentException("Unknown class name")
         }

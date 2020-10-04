@@ -14,8 +14,6 @@ import kotlinx.coroutines.withContext
 class ProductDataBaseViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: ProductDataBaseRepository
     val allProducts: LiveData<List<ProductData>>
-    var boolean = Boolean.Companion
-    var oldProduct = ProductData("", null)
 
     init {
         val productDao = AppDatabase.getDatabase(application, viewModelScope).productDao()

@@ -10,8 +10,6 @@ class ViewModelFactoryDataBase(private val application: Application) : ViewModel
         when {
             modelClass.isAssignableFrom(ProductDataBaseViewModel::class.java) -> {
                 return ProductDataBaseViewModel(application) as T
-
-
             }
             else -> throw IllegalArgumentException("Unknown class name")
         }

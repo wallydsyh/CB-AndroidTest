@@ -14,13 +14,6 @@ class ProductModel {
     private var productExpirationDate: String? = null
 
 
-    constructor(productName: String, productImageUrl: String, productExpirationDate: String) {
-        this.productName = productName
-        this.productImageUrl = productImageUrl
-        this.productExpirationDate = productExpirationDate
-
-    }
-
     fun getProductName(): String {
         return productName.toString()
     }

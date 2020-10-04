@@ -13,7 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 abstract class AppDatabase : RoomDatabase() {
     abstract fun productDao(): ProductDao
 
-
     companion object {
         // Singleton prevents multiple instances of database opening at the
         // same time.

@@ -8,7 +8,7 @@ class ProductResponse {
     @SerializedName("product")
     private val productModel: ProductModel? = null
 
-    fun getProduct() : ProductModel? {
+    fun getProduct(): ProductModel? {
         return productModel
     }
 }
