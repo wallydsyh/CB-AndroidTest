@@ -15,7 +15,7 @@ interface ProductDao {
     fun update(vararg productData: ProductData)
 
     @Query("SELECT EXISTS(SELECT * FROM product_table WHERE id = :id)")
-    fun isProductExist(id: String): Boolean
+    suspend fun isProductExist(id: String): Boolean
 
     @Query("SELECT * FROM product_table WHERE id = :id")
     fun getProduct(id: String): ProductData

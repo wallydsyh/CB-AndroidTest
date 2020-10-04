@@ -17,9 +17,11 @@ import com.cb.plus.android.test.data.ProductData
 import com.cb.plus.android.test.data.viewModel.ProductDataBaseViewModel
 import com.cb.plus.android.test.data.viewModel.ViewModelFactoryDataBase
 import com.cb.plus.android.test.databinding.ActivityMainBinding
+import com.cb.plus.android.test.utils.DisplayDialog
 import com.cb.plus.android.test.viewModel.ProductViewModel
 import com.cb.plus.android.test.viewModel.ViewModelFactory
 import com.google.zxing.integration.android.IntentIntegrator
+import kotlinx.coroutines.*
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener,
@@ -29,13 +31,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var productDataBaseViewModel: ProductDataBaseViewModel
     private lateinit var adapter: ProductListAdapter
     private var barcode = String()
+    private lateinit var scope: CoroutineScope
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setListener()
         setupViewModel()
-        setupObserverProductDataBase()
+        scope = CoroutineScope(Job() + Dispatchers.Main)
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        scope.launch {
+            setupObserverProductDataBase()
+        }
+
     }
 
     private fun setListener() {
@@ -66,43 +75,52 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         )
     }
 
-    private fun setupObserver(barcode: String) {
-        productViewModel.getProduct(barcode)
+
+    private suspend fun checkIfProductExist(productData: ProductData): Boolean {
+        return productDataBaseViewModel.isProductExist(productData)
     }
-/*
-    private fun checkIfProductExist(productData: ProductData) {
-        productDataBaseViewModel.isProductExist(productData)
-        if (productDataBaseViewModel.isProductExist.hasObservers()) {
-            productDataBaseViewModel.isProductExist.removeObserver { }
-        } else {
-            productDataBaseViewModel.isProductExist.observe(this, Observer {
-                when (it) {
-                    true -> {
-                        getProductInDatabase(productData)
-                        Toast.makeText(this, "already exist", Toast.LENGTH_LONG).show()
-                    }
-                    else -> {
-                        productDataBaseViewModel.insert(productData)
-                    }
+
+    private suspend fun checkForProduct(productData: ProductData) {
+        if (checkIfProductExist(productData)) {
+            if (getProductInDatabase(productData) != null) {
+                getProductInDatabase(productData)?.let { it1 ->
+                    DisplayDialog.displayDialog(
+                        this@MainActivity,
+                        it1,
+                        adapter.editProductInterface
+                    )
                 }
-            })
+            }
+            Toast.makeText(this@MainActivity, "Product exist", Toast.LENGTH_LONG).show()
+        } else {
+            productDataBaseViewModel.insert(productData)
+            Toast.makeText(this@MainActivity, "Product don't exist", Toast.LENGTH_LONG)
+                .show()
+
         }
     }
 
-    private fun getProductInDatabase(productData: ProductData) {
-
+    private suspend fun getProductInDatabase(productData: ProductData): ProductData? {
+        return productDataBaseViewModel.getProduct(productData)
     }
 
- */
 
-    private fun setupObserverProductDataBase() {
+    private suspend fun setupObserverProductDataBase() {
 
         productDataBaseViewModel.allProducts.observe(this, Observer {
             adapter.setProducts(it)
         })
         productViewModel.product.observe(this, Observer {
             val productData = ProductData(barcode, it.getProduct())
-            productDataBaseViewModel.insert(productData)
+            if (productData.product != null) {
+                scope.launch {
+                    checkForProduct(productData)
+                }
+
+            } else {
+                Toast.makeText(this, "Product not found in database", Toast.LENGTH_LONG).show()
+            }
+
         })
     }
 
@@ -127,8 +145,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             if (result.contents == null) {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show()
             } else {
-                setupObserver(result.contents)
                 barcode = result.contents
+                productViewModel.getProduct(barcode)
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)
@@ -138,6 +156,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onDestroy() {
         super.onDestroy()
         removeListener()
+        scope.cancel()
     }
 
     override fun onEditProduct(productData: ProductData) {

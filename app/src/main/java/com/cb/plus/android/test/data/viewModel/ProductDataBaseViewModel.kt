@@ -3,22 +3,25 @@ package com.cb.plus.android.test.data.viewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.cb.plus.android.test.data.AppDatabase
 import com.cb.plus.android.test.data.ProductData
 import com.cb.plus.android.test.data.repository.ProductDataBaseRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ProductDataBaseViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: ProductDataBaseRepository
     val allProducts: LiveData<List<ProductData>>
+    var boolean = Boolean.Companion
+    var oldProduct = ProductData("", null)
 
     init {
         val productDao = AppDatabase.getDatabase(application, viewModelScope).productDao()
         repository = ProductDataBaseRepository(productDao)
         allProducts = repository.allProducts
+
     }
 
     /**
@@ -32,11 +35,13 @@ class ProductDataBaseViewModel(application: Application) : AndroidViewModel(appl
         repository.update(productData)
     }
 
-    fun isProductExist(productData: ProductData) = viewModelScope.launch(Dispatchers.IO) {
-         repository.isProductExist(productData)
-    }
+    suspend fun isProductExist(productData: ProductData) =
+        withContext(viewModelScope.coroutineContext + Dispatchers.IO) {
+            repository.isProductExist(productData)
+        }
 
-    fun getProduct(productData: ProductData) = viewModelScope.launch(Dispatchers.IO) {
-        repository.getProduct(productData)
-    }
+    suspend fun getProduct(productData: ProductData) =
+        withContext(viewModelScope.coroutineContext + Dispatchers.IO) {
+            repository.getProduct(productData)
+        }
 }
