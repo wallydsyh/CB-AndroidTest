@@ -3,12 +3,15 @@ package com.cb.plus.android.test
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.cb.plus.android.test.adapter.ProductListAdapter
 import com.cb.plus.android.test.api.ApiHelper
 import com.cb.plus.android.test.api.ApiServiceImpl
@@ -32,6 +35,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var adapter: ProductListAdapter
     private var barcode = String()
     private lateinit var scope: CoroutineScope
+    private lateinit var recyclerView: RecyclerView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,11 +48,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         scope.launch {
             setupObserverProductDataBase()
         }
+    }
+
+    private fun setVisibilityRecycleView() {
+        when {
+            adapter.productData.isNotEmpty() -> {
+                binding.textViewEmptyStore.visibility = GONE
+                recyclerView.visibility = VISIBLE
+            }
+            else -> {
+                binding.textViewEmptyStore.visibility = VISIBLE
+                recyclerView.visibility = GONE
+
+            }
+        }
 
     }
 
     private fun setListener() {
-        val recyclerView = binding.productRecycleView
+        recyclerView = binding.productRecycleView
         adapter = ProductListAdapter(this)
         adapter.editProductInterface = this
         recyclerView.adapter = adapter
@@ -108,6 +126,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private suspend fun setupObserverProductDataBase() {
         productDataBaseViewModel.allProducts.observe(this, Observer {
             adapter.setProducts(it)
+            setVisibilityRecycleView()
         })
         productViewModel.product.observe(this, Observer {
             val productData = ProductData(barcode, it.getProduct())

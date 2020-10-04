@@ -18,7 +18,7 @@ class ProductListAdapter internal constructor(
 ) : RecyclerView.Adapter<ProductListAdapter.WordViewHolder>() {
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
-    private var productData = emptyList<ProductData>()
+     var productData = emptyList<ProductData>()
     private lateinit var binding: RecyclerviewItemBinding
 
      lateinit var editProductInterface: OnEditProductInterface
@@ -54,6 +54,7 @@ class ProductListAdapter internal constructor(
         this.productData = productData
         notifyDataSetChanged()
     }
+
 
     override fun getItemCount() = productData.size
 
