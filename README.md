@@ -31,3 +31,6 @@ Possible way of Improvements:
 -       (eg: use only kotlin coroutines to make network request and get rid of Retrofit)
 -       When adding item  that already exist to the database  I call NotifyDatasetChanged() to refresh the View
 -       maybe use NotifyItemChanged() as we are updating an Item no need to refresh the entire view
+-       put all string in a String.xml
+
+An APK is avalaible for testing
