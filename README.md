@@ -28,4 +28,5 @@ Possible way of Improvements:
 -       Add test unit
 -       Handle Network Error (I created a class for that call “Resource and Status”)
 -       Maybe unify the used component (eg: use only kotlin coroutines to make network request and get rid of Retrofit)
--       When adding item  that already exist to the recycleView, I call NotifyDatasetChanged() maybe use NotifyItemChanged() as we are updating an Item no need to refresh the entire view
+-       When adding item  that already exist to the recycleView, I call NotifyDatasetChanged() maybe use NotifyItemChanged() 
+    as we are updating an Item no need to refresh the entire view
