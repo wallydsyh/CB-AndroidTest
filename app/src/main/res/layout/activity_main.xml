@@ -37,6 +37,7 @@
             android:layout_height="wrap_content"
             android:text="Your store look empty, start scanning... "
             android:textSize="20sp"
+            android:textColor="@color/colorPrimary"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/button_scan_product"
             app:layout_constraintEnd_toEndOf="parent"
